@@ -1,7 +1,12 @@
+require 'json/ld'
 class PortalStore
   class << self
     def store
-      @store ||= []
+      @store ||= []# RDF::Repository.new
+    end
+
+    def repo
+      @repo ||= RDF::Repository.new
     end
 
     def load(file='portals.json')
@@ -17,8 +22,8 @@ class PortalStore
     end
 
     def <<(portal)
-      raise "#{portal} not a Portal!" unless portal.is_a?(Portal)
-      store << portal
+     raise "#{portal} not a Portal!" unless portal.is_a?(Portal)
+     store << portal
     end
   end
 end

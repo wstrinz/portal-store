@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    ebnf (0.3.5)
+      rdf
+      sxp
+    json-ld (1.1.1)
+      rdf (>= 1.0.8)
+    rdf (1.1.2.1)
+    rdf-turtle (1.1.2)
+      ebnf (>= 0.3.5)
+      rdf (>= 1.1.1.1)
+    sxp (0.1.5)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  json-ld
+  rdf
+  rdf-turtle

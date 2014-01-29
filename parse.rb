@@ -1,11 +1,11 @@
 require 'json'
-require_relative 'triangulate'
+#require_relative 'triangulate'
 require_relative 'portal'
 require_relative 'portal_store'
 
-class Del
-  include Delaunay
-end
+#class Del
+#  include Delaunay
+#end
 def parse_entities(ents)
   ents.to_s
   ents.map(&:last).select{|e| e["type"] == "portal"}.map{|e|
@@ -114,15 +114,17 @@ end
   #end
 #end
 def parse
-  #portals = parse_folder('captures/useful').flatten.compact.uniq
   portals = parse_batch_file('json_dump').flatten.compact.uniq
   portals.each do |p|
     PortalStore << Portal.new(p)
   end
   PortalStore.load
   PortalStore.export
+  p = PortalStore.store.first
+  g = p.to_graph
+  p2 = Portal.from_rdf(g, p.uri)
   require 'pry'; binding.pry
-  puts portals
+  #puts portals
   PortalStore.store.clear
   PortalStore.load
 end

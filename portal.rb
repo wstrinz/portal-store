@@ -1,4 +1,41 @@
+require 'rdf'
+
+class RDFHelp
+  class << self
+    def raw_value(obj)
+      if obj.is_a? RDF::URI
+        obj.to_s
+      elsif obj.is_a? RDF::Literal
+        obj.object
+      else
+        raise "not an RDF Literal or URI: #{obj}"
+      end
+    end
+  end
+end
+
 class Portal
+  BASE_URI = 'http://ingress-portals.crabdance.com/'
+
+  def self.from_rdf(repo, uri)
+    portal_data = RDF::Query.execute(repo, {
+      portal: {
+        vocab.title => :title,
+        vocab.latitude => :lat,
+        vocab.longitude => :lng
+      }
+    }).map(&:to_hash)
+
+    # stringify keys
+    portal_data = portal_data.map{|portal|
+      portal.each_with_object({}){ |entry, h|
+        h[entry.first.to_s] = RDFHelp.raw_value(entry.last)
+      }
+    }
+
+    self.new(portal_data.first)
+  end
+
   def initialize(args={})
     @data = {
       "title" => nil,
@@ -18,12 +55,32 @@ class Portal
   def lng
     @data["lng"]
   end
-  
+
   def to_json
     @data.to_json
   end
 
   def data
     @data
+  end
+
+  def self.vocab
+    RDF::Vocabulary.new BASE_URI + 'vocab/'
+  end
+
+  def vocab
+    Portal.vocab
+  end
+
+  def uri
+    RDF::URI.new(BASE_URI + 'portal/' + title.gsub(" ","+"))
+  end
+
+  def to_graph
+    g = RDF::Graph.new
+    g << [uri, vocab.title, title]
+    g << [uri, vocab.latitude, lat]
+    g << [uri, vocab.longitude, lng]
+    g
   end
 end
