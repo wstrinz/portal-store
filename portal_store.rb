@@ -18,7 +18,7 @@ class PortalStore
 
     def <<(portal)
       raise "#{portal} not a Portal!" unless portal.is_a?(Portal)
-      store << portal 
+      store << portal
     end
   end
 end
