@@ -1,7 +1,4 @@
-require 'json'
 #require_relative 'triangulate'
-require_relative 'portal'
-require_relative 'portal_store'
 
 #class Del
 #  include Delaunay
@@ -51,7 +48,7 @@ end
 def parse_file(f)
 	js = JSON.parse(IO.read f)
   data = extract_from_json(js)
-  puts "Can't find ingress data in file " + f.to_s unless data
+  #puts "Can't find ingress data in file " + f.to_s unless data
   data
 end
 
@@ -60,13 +57,13 @@ def parse_batch_file(f)
   f.each_line.each_with_index.map do |line, i|
     js = JSON.parse(line)
     data = extract_from_json(js)
-    puts "no data on line" + i.to_s unless data
+    #puts "no data on line" + i.to_s unless data
     data
   end
 end
 
 def inval(msg, file)
-  puts msg + ": " + file
+  #puts msg + ": " + file
   false
 end
 
@@ -106,27 +103,24 @@ def coordinate_list(portals)
   }
 end
 
-#def export_coordinates!(portals)
-  #open("portals.txt",'w') do |f|
-    #portals.each do |p|
-      #f.write p[:title] + "\t" + p[:coordinates][0].to_s + "\t" + p[:coordinates][1].to_s + "\n"
-    #end
-  #end
-#end
 def parse
   portals = parse_batch_file('json_dump').flatten.compact.uniq
+  PortalStore.load
+
   portals.each do |p|
     PortalStore << Portal.new(p)
   end
-  PortalStore.load
+
   PortalStore.export
-  p = PortalStore.store.first
-  g = p.to_graph
-  p2 = Portal.from_rdf(g, p.uri)
-  require 'pry'; binding.pry
-  #puts portals
-  PortalStore.store.clear
-  PortalStore.load
+
+ #p = PortalStore.find("Dick-Eddy Buildings")
+ #g = p.to_rdf
+ #p2 = Portal.from_rdf(g, p.uri)
+ #puts p2.to_rdf.dump(:ttl)
+ #PortalStore.store.clear
+ #PortalStore.load
 end
 
-parse
+if __FILE__ == $0
+  parse
+end
