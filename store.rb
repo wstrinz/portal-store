@@ -1,4 +1,6 @@
 class PortalStore
+  extend Enumerable
+
   class << self
     def store
       @store ||= []# RDF::Repository.new
@@ -19,6 +21,19 @@ class PortalStore
         }
       }).map(&:portal)
     end
+
+    def each &block
+      Enumerator.new do |enum|
+        portal_uris.each do |portal|
+          if block_given?
+            block.call Portal.from_rdf(repo, portal)
+          else
+            enum.yield Portal.from_rdf(repo, portal)
+          end
+        end
+      end
+    end
+    alias_method :each_portal, :each
 
     def find(title)
       results = RDF::Query.execute(repo, {
