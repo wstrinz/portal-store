@@ -1,5 +1,6 @@
 require 'rdf'
 require 'json/ld'
+require 'rdf/rdfa'
 require 'rdf/turtle'
 require 'json'
 

@@ -2,6 +2,13 @@ class PortalStore
   extend Enumerable
 
   class << self
+    def prefixes
+      {
+        "" => 'http://ingress-portals.crabdance.com/vocab/',
+        portal: 'http://ingress-portals.crabdance.com/portal/'
+      }
+    end
+
     def store
       @store ||= []# RDF::Repository.new
     end
@@ -52,7 +59,7 @@ class PortalStore
 
     def export(file='portals.json')
       open(file, 'w'){|f|
-        f.write repo.dump(:jsonld)
+        f.write repo.dump(:jsonld, prefixes: prefixes)
         #f.write store.map(&:data).to_json
       }
     end

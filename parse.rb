@@ -112,7 +112,7 @@ def parse
   end
 
   PortalStore.export
-
+  #require 'pry'; binding.pry
  #p = PortalStore.find("Dick-Eddy Buildings")
  #g = p.to_rdf
  #p2 = Portal.from_rdf(g, p.uri)

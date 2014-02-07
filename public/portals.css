@@ -1,0 +1,25 @@
+div[typeof=":Portal"] span[class="type"]
+{
+  color: red;
+  font-size: 1.5em;
+}
+
+.property span{
+ /* font-size: 2em;
+}
+
+span[class="type"]
+{
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+td[property=":title"]
+{
+  font-weight: bold;
+}
+
+td[class="label"]
+{
+  font-weight: bold;
+}
