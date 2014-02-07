@@ -1,14 +1,10 @@
-
 class Portal
   BASE_URI = 'http://ingress-portals.crabdance.com/'
+  FIELDS = %w(title image level latE6 health resCount lngE6 team type)
 
   def self.from_rdf(repo, uri)
     portal_data = RDF::Query.execute(repo, {
-      uri => {
-        vocab.title => :title,
-        vocab.latitude => :lat,
-        vocab.longitude => :lng
-      }
+      uri => FIELDS.each_with_object({}){|f, h| h[vocab[f]] = f.to_sym}
     }).map(&:to_hash)
 
     # stringify keys
@@ -24,8 +20,6 @@ class Portal
   def initialize(args={})
     @data = {
       "title" => nil,
-      "lat" => nil,
-      "lng" => nil
     }.merge(args)
   end
 
@@ -34,11 +28,11 @@ class Portal
   end
 
   def lat
-    @data["lat"]
+    @data["latE6"]
   end
 
   def lng
-    @data["lng"]
+    @data["lngE6"]
   end
 
   def to_json
@@ -58,15 +52,15 @@ class Portal
   end
 
   def uri
-    RDF::URI.new(BASE_URI + 'portal/' + title.gsub(" ","+"))
+    RDF::URI.new(BASE_URI + 'portal/' + "#{title.gsub(" ","+")}_#{lat}_#{lng}")
   end
 
   def to_rdf
     g = RDF::Graph.new
     g << [uri, RDF.type, vocab.Portal]
-    g << [uri, vocab.title, title]
-    g << [uri, vocab.latitude, lat]
-    g << [uri, vocab.longitude, lng]
+    FIELDS.each do |f|
+      g << [uri, vocab[f], @data[f]] if @data[f]
+    end
     g
   end
 end

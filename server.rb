@@ -6,13 +6,15 @@ end
 
 require 'sinatra'
 require 'sinatra/reloader'
+#require 'sinatra/linkeddata'
 require 'json/ld'
 require 'rdf/rdfa'
 
 helpers do
   def prefixes
     {
-      "" => 'http://ingress-portals.crabdance.com/vocab/'
+      "" => 'http://ingress-portals.crabdance.com/vocab/',
+      portal: 'http://ingress-portals.crabdance.com/portal/'
     }
   end
 
@@ -57,17 +59,49 @@ EOF
 EOF
   end
 
+  def dump_formats
+    {
+      "json" => :jsonld
+    }
+  end
+
   def template
     #RDF::RDFa::Writer::DISTILLER_HAML.merge(doc: table_doc)
     RDF::RDFa::Writer::DEFAULT_HAML.merge(doc: default_doc)
   end
 
-  def portal_rdfa(file = "portals.json")
-    Memo.portals ||= RDF::Repository.load(file)
+  def portal_data
+    Memo.portals ||= RDF::Repository.load("portals.json", format: :jsonld)
+  end
+
+  def portal_rdfa
     Memo.portals.dump(:rdfa, prefixes: prefixes, haml: template)
   end
 end
 
 get '/' do
   portal_rdfa
+end
+
+get '/map' do
+  haml :map
+end
+
+
+get '/portals.?:format?' do
+  format = params[:format]
+  opts = {prefixes: prefixes}
+
+  if format
+    format = dump_formats[params[:format]] || format.to_sym
+  elsif request.accept? "text/html"
+    format = :rdfa
+    opts[:haml] = template
+  end
+
+  if format
+    portal_data.dump(format, opts)
+  else
+    portal_data
+  end
 end

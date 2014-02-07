@@ -1,26 +1,31 @@
-#require_relative 'triangulate'
+require './portal_store'
 
 #class Del
 #  include Delaunay
 #end
 def parse_entities(ents)
   ents.to_s
-  ents.map(&:last).select{|e| e["type"] == "portal"}.map{|e|
-    {
-      "title" => e["title"],
-      "lat" => e["latE6"],
-      "lng" => e["lngE6"]
-    }
-  }
+  ents.map(&:last).select{|e| e["type"] == "portal"}
+  #.map{|e|
+
+  # {
+  #   "title" => e["title"],
+  #   "lat" => e["latE6"],
+  #   "lng" => e["lngE6"],
+  #   "resCount" => e["resCount"],
+  #   "health" => e["resCount"],
+  #   "team" => e["team"]
+  # }
+  #}
 end
 
 def parse_log_entity(entity)
-  portal = entity.find{|field| field.first == "PORTAL"}.last
-  {
-    "title" => portal["name"],
-    "lat" => portal["latE6"],
-    "lng" => portal["lngE6"]
-  }
+  entity.find{|field| field.first == "PORTAL"}.last
+# {
+#   "title" => portal["name"],
+#   "lat" => portal["latE6"],
+#   "lng" => portal["lngE6"]
+# }
 end
 
 def extract_from_json(json)
@@ -96,7 +101,6 @@ def to_coord(int)
   int.to_f / 1000000
 end
 
-Coord = Struct.new(:x,:y)
 def coordinate_list(portals)
   portals.map{|p|
     {title: p[:title], coordinates: Coord.new[to_coord(p[:lat]), to_coord(p[:lng])]}
@@ -106,13 +110,12 @@ end
 def parse
   portals = parse_batch_file('json_dump').flatten.compact.uniq
   PortalStore.load
-
+  #require 'pry'; binding.pry
   portals.each do |p|
     PortalStore << Portal.new(p)
   end
 
   PortalStore.export
-  #require 'pry'; binding.pry
  #p = PortalStore.find("Dick-Eddy Buildings")
  #g = p.to_rdf
  #p2 = Portal.from_rdf(g, p.uri)

@@ -1,0 +1,23 @@
+%head
+  %link{href: "http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css", rel: "stylesheet"}/
+  /[if lte IE 8]
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.ie.css" />
+  %meta{content: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no", name: "viewport"}/
+  %script{src: "http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js"}
+  %script{src: "http://code.jquery.com/jquery-2.0.3.min.js"}
+  %script{src: "http://underscorejs.org/underscore-min.js"}
+  %script{src: "/javascript/jsonld.js"}
+  :css
+    body {
+        padding: 0;
+        margin: 0;
+    }
+    html, body, #map {
+        height: 100%;
+    }
+%body
+
+  #map
+  #txt text
+
+  %script{src: "/javascript/map.js"}
